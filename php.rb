@@ -1,12 +1,19 @@
-dep "phpunit" do
-  requires "php"
-end
-
-dep "php.managed", :version do
+dep "php5.managed" do
+  on :brew do
+    requires "php.recipe"
+  end
+  met? { which "php" and which "pear" }
   installs {
-    via :apt, "php5"
+    via :brew, "php"
+    via :apt, "php5", "php5-mysql", "php-pear"
   }
 end
+
+dep "php.recipe" do
+  source "https://raw.github.com/ampt/homebrew/php/Library/Formula/php.rb"
+end
+
+
 
 dep "phpunit.pear" do
   channel "pear.phpunit.de"
