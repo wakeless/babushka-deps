@@ -20,7 +20,7 @@ dep "selenium.managed" do
 end
 
 dep "lamp.managed" do
-  requires "benhoskings:mysql.managed", "php.managed"
+  requires "mysql.managed", "php.managed"
   installs {
     via :apt, "apache2"
   }
