@@ -1,4 +1,3 @@
-require "ruby-debug"
 dep "php5.managed" do
   on :brew do
     requires "php.recipe"
