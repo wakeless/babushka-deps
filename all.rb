@@ -14,7 +14,7 @@ dep "ci-system.managed" do
 end
 
 dep "selenium" do
-  requires "firefox.managed", "java.managed"
+  requires "firefox.managed", "java"
 end
 
 dep "apache2.managed"
@@ -26,4 +26,7 @@ dep "lamp" do
 end
 
 dep "pear.managed"
-dep "firefox.managed", "java.managed"
+dep "firefox.managed", "default-jdk.managed"
+dep "java" do
+  requires "default-jdk.managed"
+end
