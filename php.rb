@@ -5,7 +5,7 @@ dep "php5.managed" do
   met? { which "php" and which "pear" }
   installs {
     via :brew, "php"
-    via :apt, "php5", "php5-mysql", "php-pear"
+    via :apt, "php5", "php5-mysql", "php-pear", "php5-curl"
   }
 end
 
@@ -35,6 +35,7 @@ meta "pear", :version do
 
   template {
     requires "php5.managed"
+    before { shell "pear channel-update #{channel}" }
     met? { log_shell "Checking for pear #{channel}/#{name}", "pear info #{channel}/#{name}" }
     meet { log_shell "Installing #{name}", "pear install --alldeps #{channel}/#{name} ", :sudo => true }
   }

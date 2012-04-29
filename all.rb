@@ -13,10 +13,6 @@ dep "ci-system.managed" do
   end
 end
 
-dep "selenium" do
-  requires "firefox.managed", "java.managed"
-end
-
 dep "apache2.managed"
 
 dep "lamp" do

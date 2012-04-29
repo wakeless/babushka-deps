@@ -1,0 +1,5 @@
+#!<%= which "bash" %>
+
+export DISPLAY=":99"
+/etc/init.d/xvfb start
+java -jar <%= path %>/lib/selenium-server-standalone-<%= version %>.jar
