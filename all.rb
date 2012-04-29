@@ -2,7 +2,9 @@ dep "system" do
   requires "git.managed", "lamp", "firefox.managed", "phpunit-pear", "jenkins.managed"
 end
 
-dep "jenkins.managed"
+dep "jenkins.managed" do
+  provides "jenkins-cli"
+end
 
 dep "apache2.managed"
 

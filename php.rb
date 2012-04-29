@@ -29,6 +29,35 @@ dep "phpunitselenium.pear" do
   name "PHPUnit_Selenium"
 end
 
+dep "git.jenkins"
+
+meta "jenkins" do
+  def restart
+    shell "invoke-rc.d jenkins stop", :sudo => true
+    shell "invoke-rc.d jenkins start", :sudo => true
+  end
+
+  template {
+    met? {}
+    meet { 
+      log_shell "Installing jenkins plugin #{basename}", "jenkins-cli http://localhost:8080 install-plugin #{basename}"
+      restart
+    }
+  }
+
+end
+
+dep "php jenkins" do
+  met? {}
+  meet {
+    cd "/var/lib/jenkins/jobs", :create => true, :sudo => true do
+      log_shell "Downloading sebastian bermann's jenkins templates", "git clone git://github.com/sebastianbergmann/php-jenkins-template.git php-template"
+    end
+    shell "invoke-rc.d jenkins stop", :sudo => true
+    shell "invoke-rc.d jenkins start", :sudo => true
+  }
+end
+
 meta "pear", :version do
   accepts_value_for :channel
   accepts_value_for :name
@@ -45,3 +74,5 @@ dep "pear channel", :channel, :channel_name do
   met? { log_shell("pear channel-info #{channel_name}", "pear channel-info #{channel_name}") }
   meet { log_shell "Discovering channel #{channel}", "pear channel-discover #{channel}", :sudo => true }
 end
+
+
