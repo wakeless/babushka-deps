@@ -29,12 +29,24 @@ dep "phpunitselenium.pear" do
   name "PHPUnit_Selenium"
 end
 
-dep "git.jenkins"
+dep "git.jenkins" do
+  after {
+    cd home / ".ssh", :sudo => true, :create => true do
+      sudo "ssh-keygen -f id_rsa"
+      sudo "chown jenkins:no-group *"
+      sudo "chmod 600 *"
+    end
+  }
+end
 
 meta "jenkins" do
   accepts_list_for :provides, :basename
   def host
     "localhost:8080"
+  end
+
+  def home
+    "/var/lib/jenkins"
   end
 
   template {
