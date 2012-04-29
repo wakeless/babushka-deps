@@ -1,17 +1,8 @@
 dep "system" do
-  requires "git.managed", "lamp.managed", "firefox.managed", "phpunit-pear"
+  requires "git.managed", "lamp", "firefox.managed", "phpunit-pear", "jenkins.managed"
 end
 
-dep "ci-system.managed" do
-  on :apt do
-    requires "tissak:jenkins.managed"
-  end
-  on :brew do
-    installs { 
-      via :brew, "jenkins"
-    }
-  end
-end
+dep "jenkins.managed"
 
 dep "apache2.managed"
 
