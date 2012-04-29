@@ -1,3 +1,4 @@
+require "ruby-debug"
 dep "php5.managed" do
   on :brew do
     requires "php.recipe"
@@ -23,15 +24,24 @@ dep "phpunit.pear" do
   met? { which "phpunit" }
 end
 
+dep "phpunitselenium.pear" do
+  requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony-project.com", "symfony")
+  channel "phpunit"
+  name "PHPUnit_Selenium"
+end
+
 meta "pear", :version do
   accepts_value_for :channel
-  accepts_value_for :channel_name
   accepts_value_for :name
 
   template {
-    prepare { sudo "pear channel-discover #{channel}" }
-    met? {}
-    meet { sudo "pear install --alldeps #{channel_name}/#{name} " }
+    requires "php5.managed"
+    met? { log_shell "Checking for pear #{channel}/#{name}", "pear info #{channel}/#{name}" }
+    meet { log_shell "Installing #{name}", "pear install --alldeps #{channel}/#{name} ", :sudo => true }
   }
 end
 
+dep "pear channel", :channel, :channel_name do
+  met? { log_shell("pear channel-info #{channel_name}", "pear channel-info #{channel_name}") }
+  meet { log_shell "Discovering channel #{channel}", "pear channel-discover #{channel}", :sudo => true }
+end
