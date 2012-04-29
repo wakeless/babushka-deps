@@ -32,16 +32,10 @@ end
 dep "git.jenkins"
 
 meta "jenkins" do
-  def restart
-    shell "invoke-rc.d jenkins stop", :sudo => true
-    shell "invoke-rc.d jenkins start", :sudo => true
-  end
-
   template {
     met? {}
     meet { 
-      log_shell "Installing jenkins plugin #{basename}", "jenkins-cli -s http://localhost:8080 install-plugin #{basename}"
-      restart
+      log_shell "Installing jenkins plugin #{basename}", "jenkins-cli -s http://localhost:8080 install-plugin #{basename} -restart"
     }
   }
 
@@ -51,7 +45,7 @@ dep "php jenkins" do
   met? {}
   meet {
     cd "/var/lib/jenkins/jobs", :create => true, :sudo => true do
-      log_shell "Downloading sebastian bermann's jenkins templates", "git clone git://github.com/sebastianbergmann/php-jenkins-template.git php-template"
+      log_shell "Downloading sebastian bermann's jenkins templates", "git clone git://github.com/sebastianbergmann/php-jenkins-template.git php-template", :sudo => true
     end
     shell "invoke-rc.d jenkins stop", :sudo => true
     shell "invoke-rc.d jenkins start", :sudo => true
