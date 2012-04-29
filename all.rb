@@ -22,7 +22,7 @@ dep "apache2.managed"
 dep "lamp" do
   requires "mysql.managed", "php.managed", "apache2.managed"
 
-  met? { which "mysql" && which "php" && which "apachectl" }
+  met? { which "mysql" and which "php" and which "apachectl" }
 end
 
 dep "pear.managed"
