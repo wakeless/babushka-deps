@@ -40,7 +40,7 @@ meta "jenkins" do
   template {
     met? {}
     meet { 
-      log_shell "Installing jenkins plugin #{basename}", "jenkins-cli http://localhost:8080 install-plugin #{basename}"
+      log_shell "Installing jenkins plugin #{basename}", "jenkins-cli -s http://localhost:8080 install-plugin #{basename}"
       restart
     }
   }
