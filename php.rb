@@ -14,6 +14,11 @@ dep "php.recipe" do
 end
 
 
+dep "dbunit.pear" do
+  channel "pear.phpunit.de"
+  channel_name "phpunit"
+  name "DBUnit"
+end
 
 dep "phpunit.pear" do
   channel "pear.phpunit.de"

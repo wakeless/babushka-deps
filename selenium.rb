@@ -4,41 +4,49 @@ dep "selenium", :version, :path do
   path.default!("/usr/local")
 
   def selenium_src
-    "http://selenium.googlecode.com/files/selenium-server-standalone-#{version}.jar"
+    "http://selenium.googlecode.com/files/#{selenium_file}"
+  end
+
+  def selenium_file
+    "selenium-server-standalone-#{version}.jar"
   end
 
   def selenium_bin
     path / "bin/selenium-server"
   end
 
-  met? { which "selenium-server" }
+  met? { which "selenium-server" and File.exists? path / "lib" / selenium_file }
   meet {
-    cd path / "lib" do
-      Babushka::Resource.download selenium_src
+    cd "/tmp" do
+        Babushka::Resource.download selenium_src
     end
-    render_erb "selenium/selenium-server.erb", :to => selenium_bin
-    shell "chmod +x #{selenium_bin}"
+    cd path / "lib", :sudo => true do
+      sudo "cp /tmp/selenium-server-standalone-#{version}.jar ."
+    end
+    render_erb "selenium/selenium-server.erb", :to => selenium_bin, :sudo => true
+    sudo "chmod +x #{selenium_bin}"
   }
 end
 
 dep "xvfb.managed" do
-  installs {
-    via :apt, "xvfb"
-  }
+  provides "xvfb-run"
+end
 
-  met? { which "xvfb" and File.exists? "/etc/init.d/xvfb" }
-  meet { 
-    render_erb "selenium/xvfb.erb", :to => "/etc/init.d", :sudo => true 
-    sudo "chmod 755 /etc/init.d/xvfb"
-  }
+dep "xvfb" do
+  executable "/usr/bin/Xvfb :99 -ac -screen 0 1024x768x8"
+  requires "xvfb.managed"
 end
 
 dep "selenium-headless", :version, :path do
-  requires "xvfb.managed", "selenium".with(version, path)
+  path.default!("/usr/local")
+  requires "xvfb", "selenium".with(version, path)
+  def selenium_bin
+    path / "bin" / "selenium-server-headless"
+  end
 
   met? { which "selenium-server-headless" }
   meet {
-    render_erb "selenium/selenium-server-headless.erb", :to => selenium_bin
-    shell "chmod +x #{selenium_bin}"
+    render_erb "selenium/selenium-server-headless.erb", :to => selenium_bin, :sudo => true
+    sudo "chmod +x #{selenium_bin}"
   }
 end

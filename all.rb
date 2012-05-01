@@ -6,7 +6,11 @@ dep "jenkins.managed" do
   provides "jenkins-cli"
 end
 
-dep "apache2.managed"
+dep "apache2.managed" do
+  after { sudo "a2enmod rewrite"
+    sudo "service apache2 restart"
+  }
+end
 
 dep "lamp" do
   requires "mysql.managed", "php.managed", "apache2.managed"
@@ -24,3 +28,34 @@ dep "java.managed" do
   }
 end
 
+dep "selenium.service" do
+  binary "selenium-server-headless"
+  path "/usr/local/bin"
+end
+
+meta "service" do
+  accepts_value_for :binary, :basename
+  accepts_value_for :path, "/usr/local/bin"
+
+  def executable
+    path / binary
+  end
+
+  def service_path
+    "/etc/init.d"
+  end
+
+  def service
+    service_path / basename
+  end
+
+  template {
+    met? { File.exists? service and service.executable? }
+    meet { 
+      cd service_path, :create => true, :sudo => true do
+        render_erb "system/service.erb", :to => service, :sudo => true 
+        sudo "chmod 755 #{service}" 
+      end
+    }
+  }
+end
