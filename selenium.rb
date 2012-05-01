@@ -28,13 +28,19 @@ dep "selenium", :version, :path do
   }
 end
 
+dep "selenium.upstart" do
+  binary "selenium-server-headless"
+end
+
 dep "xvfb.managed" do
   provides "xvfb-run"
 end
 
-dep "xvfb" do
-  executable "/usr/bin/Xvfb :99 -ac -screen 0 1024x768x8"
+dep "xvfb.upstart" do
   requires "xvfb.managed"
+  def executable
+    "/usr/bin/Xvfb :99 -ac -screen 0 1024x768x8"
+  end
 end
 
 dep "selenium-headless", :version, :path do

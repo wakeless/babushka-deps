@@ -1,8 +1,8 @@
 dep "php5.managed" do
+  provides "php", "pear"
   on :brew do
     requires "php.recipe"
   end
-  met? { which "php" and which "pear" }
   installs {
     via :brew, "php"
     via :apt, "php5", "php5-mysql", "php-pear", "php5-curl"
@@ -15,14 +15,12 @@ end
 
 
 dep "dbunit.pear" do
-  channel "pear.phpunit.de"
-  channel_name "phpunit"
+  channel "phpunit"
   name "DBUnit"
 end
 
 dep "phpunit.pear" do
-  channel "pear.phpunit.de"
-  channel_name "phpunit"
+  channel "phpunit"
   name "PHPUnit"
 
   met? { which "phpunit" }
