@@ -33,6 +33,8 @@ dep "apache vhost", :host, :public_path do
     else
       File.exists?(vhost_path / vhost_conf) and !sudo("cat #{vhost_file}").split("\n").grep(include).empty?}
     end
+  }
+
   meet {
     cd vhost_path, :create => true, :sudo => true do
       render_erb "apache/virtual-host.erb", :to => vhost_conf, :sudo => true
