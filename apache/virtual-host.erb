@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+  ServerName <%= host %>
+  DocumentRoot <%= public_path %>
+
+  <Directory <%= public_path %>>
+    Options Indexes FollowSymLinks MultiViews
+    AllowOverride None
+    Order allow,deny
+    allow from all
+  </Directory>
+
+  #ErrorLog <%= host %>-error.log
+  #CustomLog <%=  host %>-access.log combined
+</VirtualHost>
