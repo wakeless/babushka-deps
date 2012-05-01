@@ -31,7 +31,7 @@ dep "apache vhost", :host, :public_path do
     if new_config?
       File.exists? apache_root / "sites-enabled" / vhost_conf
     else
-      File.exists?(vhost_path / vhost_conf) and !sudo("cat #{vhost_file}").split("\n").grep(include).empty?}
+      File.exists?(vhost_path / vhost_conf) and !sudo("cat #{vhost_file}").split("\n").grep(include).empty?
     end
   }
 
@@ -45,6 +45,7 @@ dep "apache vhost", :host, :public_path do
     else
       append_to_file include, vhost_file, :sudo => true
     end
+    sudo "apachectl -k restart"
   }
 
 end
