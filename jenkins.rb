@@ -1,3 +1,5 @@
+require "ruby-debug"
+
 dep "jenkins.managed" do
   provides "jenkins-cli"
 end
@@ -6,8 +8,16 @@ dep "jenkins" do
   requires "jenkins.managed", "git.jenkins"
 end
 
-dep "jenkins git job", :job_name, :git_name, :git_url, :email_notification do
-  met? { File.exists? "/var/lib/jenkins/jobs/#{job_name}/config.xml" }
+dep "jenkins git job", :job_name, :git_url, :email_notification do
+  git_url.default("").ask("What's the url of the git repo?")
+  
+  def git_name
+    git_url.to_s.split("/")[-1].split(".").first
+  end
+
+  met? { 
+  url = git_url
+  File.exists? "/var/lib/jenkins/jobs/#{job_name}/config.xml" }
   meet { 
     cd "/tmp" do
       render_erb "jenkins/job.xml.erb", :to => "/tmp/config.xml", :comment => "<!-- ", :comment_suffix => " -->" 
