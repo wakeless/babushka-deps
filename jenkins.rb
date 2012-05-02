@@ -11,7 +11,7 @@ dep "git.jenkins" do
     cd home / ".ssh", :sudo => true, :create => true do
       sudo "ssh-keygen -f id_rsa"
       sudo "chown -R jenkins:jenkins .ssh"
-      sudo "chmod -R 600 .ssh"
+      sudo "chmod -R 600 ."
     end
   }
 end
