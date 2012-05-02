@@ -11,8 +11,8 @@ dep "jenkins git job", :job_name, :git_name, :git_url, :email_notification do
   meet { 
     cd "/tmp" do
       render_erb "jenkins/job.xml.erb", :to => "/tmp/config.xml", :comment => "<!-- ", :comment_suffix => " -->" 
-      shell "tail -n +2 config.xml > config.xml"
-      shell "jenkins-cli create-job '#{job_name}' < config.xml"
+      shell "tail -n +2 config.xml > #{job_name}.xml"
+      shell "jenkins-cli create-job '#{job_name}' < #{job_name}.xml"
     end
   }
 end
