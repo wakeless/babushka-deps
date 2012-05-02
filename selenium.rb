@@ -29,7 +29,7 @@ dep "selenium", :version, :path do
 end
 
 dep "selenium.upstart" do
-  requires "selenium-headless"
+  requires "selenium-headless", "xvfb.upstart"
   binary "selenium-server-headless"
 end
 
@@ -46,7 +46,7 @@ end
 
 dep "selenium-headless", :version, :path do
   path.default!("/usr/local")
-  requires "xvfb", "selenium".with(version, path)
+  requires "xvfb.managed", "selenium".with(version, path)
   def selenium_bin
     path / "bin" / "selenium-server-headless"
   end
