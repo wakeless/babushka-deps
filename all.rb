@@ -20,10 +20,9 @@ dep "ssh keys", :user, :path do
 
   met? { File.exists? path / ".ssh"}
   meet { 
-     cd path / ".ssh", :sudo => true, :create => true do
+     cd path / ".ssh", :sudo => true, :create => "700" do
       sudo "ssh-keygen -f id_rsa"
       sudo "chown -R #{user}:#{user} ."
-      sudo "chmod -R 600 ."
       log "Here's the public key..."
       log sudo("cat id_rsa.pub") 
     end
