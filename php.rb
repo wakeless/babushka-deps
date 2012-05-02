@@ -12,6 +12,10 @@ dep "php.recipe" do
   source "https://raw.github.com/ampt/homebrew/php/Library/Formula/php.rb"
 end
 
+dep "phpunit" do
+  requires "phpunit.pear", "dbunit.pear", "phpunitselenium.pear"
+end
+
 
 dep "dbunit.pear" do
   requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony-project.com", "symfony")
