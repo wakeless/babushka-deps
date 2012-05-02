@@ -29,6 +29,7 @@ dep "selenium", :version, :path do
 end
 
 dep "selenium.upstart" do
+  requires "selenium-headless"
   binary "selenium-server-headless"
 end
 
