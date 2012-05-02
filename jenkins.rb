@@ -6,12 +6,12 @@ dep "jenkins" do
   requires "jenkins.managed", "git.jenkins"
 end
 
-dep "jenkins git job", :name, :git_name, :git_url, :email_notification do
-  met? { File.exists? "/var/lib/jenkins/jobs/#{name}/config.xml" }
+dep "jenkins git job", :job_name, :git_name, :git_url, :email_notification do
+  met? { File.exists? "/var/lib/jenkins/jobs/#{job_name}/config.xml" }
   meet { 
     cd "/tmp" do
       render_erb "jenkins/job.xml.erb", :to => "config.xml"
-      shell "jenkins-cli create-job #{name} < config.xml"
+      shell "jenkins-cli create-job #{job_name} < config.xml"
     end
   }
 end
