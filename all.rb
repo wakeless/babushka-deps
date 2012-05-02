@@ -83,3 +83,16 @@ meta "service" do
     }
   }
 end
+
+dep "hostfile line", :host, :address do
+  def host_line
+    "#{address} #{host}"
+  end
+
+  def host_file
+    "/etc/hosts"
+  end
+
+  met? { !shell("cat #{host_file}").split("\n").grep(host_line).empty? }
+  meet { append_to_file host_line, "/etc/hosts", :sudo => true }
+end

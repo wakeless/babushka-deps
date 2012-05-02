@@ -1,10 +1,11 @@
 <VirtualHost *:80>
   ServerName <%= host %>
+  ServerAlias www.<%= host %>
   DocumentRoot "<%= public_path %>"
 
   <Directory "<%= public_path %>">
     Options Indexes FollowSymLinks MultiViews
-    AllowOverride None
+    AllowOverride All
     Order allow,deny
     allow from all
   </Directory>

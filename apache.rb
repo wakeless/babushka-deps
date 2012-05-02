@@ -3,14 +3,6 @@ dep "apache vhost", :host, :public_path do
     "/etc/apache2/"
   end
 
-  def vhost_path
-    if new_config?
-      apache_root / "sites-available"
-    else
-      apache_root / "extra/vhosts/"
-    end
-  end
-
   def vhost_conf
     "#{host}.conf"
   end
@@ -27,25 +19,41 @@ dep "apache vhost", :host, :public_path do
     File.exists?(apache_root / "sites-available")
   end
 
-  met? { 
-    if new_config?
+  on :linux do
+    def vhost_path
+      apache_root / "sites-available"
+    end
+
+    met? { 
       File.exists? apache_root / "sites-enabled" / vhost_conf
-    else
-      File.exists?(vhost_path / vhost_conf) and !sudo("cat #{vhost_file}").split("\n").grep(include).empty?
-    end
-  }
+    }
 
-  meet {
-    cd vhost_path, :create => true, :sudo => true do
-      render_erb "apache/virtual-host.erb", :to => vhost_conf, :sudo => true
-    end
-
-    if new_config?
+    meet {
+      cd conf_path, :create => true, :sudo => true do
+        render_erb "apache/virtual-host.erb", :to => vhost_path / vhost_conf, :sudo => true
+      end
       sudo "a2ensite #{vhost_conf}"
-    else
-      append_to_file include, vhost_file, :sudo => true
+      sudo "apachectl -k restart"
+    }
+  end
+
+  on :osx do
+    def vhost_path
+      apache_root / "extra/vhosts"
     end
-    sudo "apachectl -k restart"
-  }
+
+    met? { 
+      File.exists?(vhost_path / vhost_conf) and !sudo("cat #{vhost_file}").split("\n").grep(include).empty?
+    }
+
+    meet {
+      cd vhost_path, :create => true, :sudo => true do
+        render_erb "apache/virtual-host.erb", :to => vhost_conf, :sudo => true
+      end
+      append_to_file include, vhost_file, :sudo => true
+      sudo "apachectl -k restart"
+
+    }
+  end
 
 end

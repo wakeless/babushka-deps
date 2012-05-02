@@ -30,10 +30,6 @@ end
 dep 'mysql.managed' do
   installs {
     via :apt, %w[mysql-server libmysqlclient-dev]
-    via :macports, 'mysql5-server'
   }
   provides 'mysql'
-  after :on => :osx do
-    sudo "ln -s #{Babushka::MacportsHelper.prefix / 'lib/mysql5/bin/mysql*'} #{Babushka::MacportsHelper.prefix / 'bin/'}"
-  end
 end

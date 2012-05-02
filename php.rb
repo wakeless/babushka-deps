@@ -1,5 +1,4 @@
 dep "php5.managed" do
-  provides "php", "pear"
   on :brew do
     requires "php.recipe"
   end
@@ -15,11 +14,13 @@ end
 
 
 dep "dbunit.pear" do
+  requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony-project.com", "symfony")
   channel "phpunit"
   name "DBUnit"
 end
 
 dep "phpunit.pear" do
+  requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony-project.com", "symfony")
   channel "phpunit"
   name "PHPUnit"
 
