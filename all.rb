@@ -1,5 +1,5 @@
-equires "git.managed", "lamp", "firefox.managed", "phpunit.pear", "dbunit.pear", "jenkins", "xvfb.upstart", "selenium.upstart"
-  requires "xvfb.managed"
+dep "system" do
+  requires "git.managed", "lamp", "firefox.managed", "phpunit.pear", "dbunit.pear", "jenkins", "xvfb.upstart", "selenium.upstart"
 end
 
 dep "apache2.managed" do
