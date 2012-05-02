@@ -29,9 +29,7 @@ dep "apache vhost", :host, :public_path do
     }
 
     meet {
-      cd conf_path, :create => true, :sudo => true do
-        render_erb "apache/virtual-host.erb", :to => vhost_path / vhost_conf, :sudo => true
-      end
+      render_erb "apache/virtual-host.erb", :to => vhost_path / vhost_conf, :sudo => true
       sudo "a2ensite #{vhost_conf}"
       sudo "apachectl -k restart"
     }
