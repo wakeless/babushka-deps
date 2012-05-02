@@ -3,7 +3,6 @@ dep "system" do
   requires "xvfb.managed"
 end
 
-
 dep "apache2.managed" do
   after { 
     sudo "a2enmod rewrite"
