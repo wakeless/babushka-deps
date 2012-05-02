@@ -18,7 +18,7 @@ end
 dep "ssh keys", :user, :path do
   path.default!("~#{user}")
 
-  met? { File.exists? path / ".ssh" and File.exists? path / ".ssh/id_rsa" and File.exists? path / ".ssh/id_rsa.pub" }
+  met? { File.exists? path / ".ssh"}
   meet { 
      cd path / ".ssh", :sudo => true, :create => true do
       sudo "ssh-keygen -f id_rsa"
