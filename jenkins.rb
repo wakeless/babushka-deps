@@ -1,5 +1,3 @@
-require "ruby-debug"
-
 dep "jenkins.managed" do
   provides "jenkins-cli"
 end
