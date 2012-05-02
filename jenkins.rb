@@ -34,7 +34,7 @@ meta "jenkins" do
     before { 
       log_shell "Updating plugins", "curl  -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' | curl -X POST -H 'Accept: application/json' -d @- http://#{host}/updateCenter/byId/default/postBack" 
     }
-    met? {}
+    met? { "#{home}/plugins/#{basename}/" }
     meet { 
       log_shell "Installing jenkins plugin #{provides.join(" ")}", "jenkins-cli -s http://#{host} install-plugin #{basename} -restart"
     }
