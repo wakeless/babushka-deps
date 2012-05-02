@@ -1,11 +1,8 @@
 dep "system" do
-  requires "git.managed", "lamp", "firefox.managed", "phpunit.pear", "dbunit.pear", "jenkins.managed", "xvfb.upstart", "selenium.upstart"
+  requires "git.managed", "lamp", "firefox.managed", "phpunit.pear", "dbunit.pear", "jenkins", "xvfb.upstart", "selenium.upstart"
   requires "xvfb.managed"
 end
 
-dep "jenkins.managed" do
-  provides "jenkins-cli"
-end
 
 dep "apache2.managed" do
   after { 
