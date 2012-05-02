@@ -10,7 +10,7 @@ dep "jenkins git job", :job_name, :git_name, :git_url, :email_notification do
   met? { File.exists? "/var/lib/jenkins/jobs/#{job_name}/config.xml" }
   meet { 
     cd "/tmp" do
-      render_erb "jenkins/job.xml.erb", :to => "config.xml"
+      render_erb "jenkins/job.xml.erb", :to => "/tmp/config.xml"
       shell "jenkins-cli create-job #{job_name} < config.xml"
     end
   }
