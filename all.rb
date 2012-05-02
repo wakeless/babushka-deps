@@ -17,6 +17,22 @@ dep "lamp" do
   #met? { which "mysql" and which "php" and which "apachectl" }
 end
 
+dep "ssh keys", :user, :path do
+  path.default!("~#{user}")
+
+  met? { File.exists? path / ".ssh" and File.exists? path / ".ssh/id_rsa" and File.exists? path / ".ssh/id_rsa.pub" }
+  meet { 
+     cd path / ".ssh", :sudo => true, :create => true do
+      sudo "ssh-keygen -f id_rsa"
+      sudo "chown -R #{user}:#{user} .ssh"
+      sudo "chmod -R 600 ."
+      log "Here's the public key..."
+      log sudo("cat id_rsa.pub") 
+    end
+  }
+
+end
+
 dep "pear.managed"
 dep "firefox.managed"
 

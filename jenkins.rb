@@ -17,15 +17,7 @@ dep "jenkins git job", :name, :git_name, :git_url, :email_notification do
 end
 
 dep "git.jenkins" do
-  after {
-    cd home / ".ssh", :sudo => true, :create => true do
-      sudo "ssh-keygen -f id_rsa"
-      sudo "chown -R jenkins:jenkins .ssh"
-      sudo "chmod -R 600 ."
-      log "Here's the public key..."
-      log exec("cat .ssh/id_rsa.pub")
-    end
-  }
+  requires "ssh keys".with("jenkins", "/var/lib/jenkins")
 end
 
 meta "jenkins" do
