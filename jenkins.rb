@@ -1,5 +1,10 @@
-dep "jenkins.managed" do
+dep "jenkins.managed", :url do
+  url.default!("localhost:8080")
+
   provides "jenkins-cli"
+  after {
+    append_to_file "JENKINS_URL=#{url}", "/etc/jenkins/cli.conf", :sudo => true
+  }
 end
 
 dep "jenkins" do
