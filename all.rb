@@ -40,6 +40,14 @@ dep "java.managed" do
   }
 end
 
+dep "tmp tmpfs" do
+  def fstab
+    "tmpfs /tmp tmpfs rw,nosuid,mode=0777 0 0"
+  end
+  met? { '/etc/fstab'.p.grep(fstab) }
+  meet { append_to_file "tmpfs /tmp tmpfs rw,nosuid,mode=0777 0 0", "/etc/fstab", :sudo => true }
+end
+
 
 dep "shutdown_on_startup.upstart", :minutes do
   minutes.default("50").ask("In how many minutes do you want to shutdown?")
