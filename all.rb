@@ -41,6 +41,15 @@ dep "java.managed" do
 end
 
 
+dep "shutdown_on_startup.upstart", :minutes do
+  minutes.default("50").ask("In how many minutes do you want to shutdown?")
+
+  def executable
+    "shutdown -h +#{minutes}"
+  end
+
+end
+
 meta "upstart" do
   accepts_value_for :binary, :basename
   accepts_value_for :path, "/usr/local/bin"
