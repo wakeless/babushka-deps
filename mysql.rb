@@ -33,3 +33,10 @@ dep 'mysql.managed' do
   }
   provides 'mysql'
 end
+
+dep "mysql tmpfs" do
+  requires "mysql.managed"
+  after {
+    render_erb "mysql/tmpfs.erb", :to => "/etc/init/mysql.conf", :sudo => true
+  }
+end
