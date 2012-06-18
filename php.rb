@@ -1,15 +1,22 @@
 dep "php5.managed" do
   on :brew do
-    requires "php.recipe"
+    requires "brewtap".with("josegonzalez/php")
+    provides "php"
   end
+
   installs {
-    via :brew, "php"
+    via :brew, "php54"
     via :apt, "php5", "php5-mysql", "php-pear", "php5-curl"
   }
 end
 
-dep "php.recipe" do
-  source "https://raw.github.com/ampt/homebrew/php/Library/Formula/php.rb"
+dep "brewtap", :tap_repo do
+  met? {
+    !shell("brew tap").split("\n").grep(tap_repo).empty?
+  }
+  meet {
+        shell "brew tap #{tap_repo}"
+  }
 end
 
 dep "phpunit" do
