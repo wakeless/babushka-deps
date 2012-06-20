@@ -1,8 +1,13 @@
 dep "php5.managed" do
+  provides "php ~> 5.4.3"
   on :brew do
     requires "brewtap".with("josegonzalez/php")
-    provides "php"
   end
+
+  on :apt do
+    requires "ppa".with("ondrej/php5")
+  end
+
 
   installs {
     via :brew, "php54"
