@@ -1,0 +1,14 @@
+daemon=60                               # check every 300 seconds
+syslog=yes                              # log update msgs to syslog
+mail=root                               # mail all msgs to root
+mail-failure=root                       # mail failed update msgs to root
+pid=/var/run/ddclient.pid               # record PID in file.
+ssl=yes                                 # use ssl-support.  Works with
+# ssl-library
+use=web, web=myip.dnsdynamic.com        # get ip from server.
+server=www.dnsdynamic.org               # default server
+login=<%= username %>                # default login
+password=<%= password %>
+server=www.dnsdynamic.org,              \
+protocol=dyndns2                        \
+<%= domain %>
