@@ -1,7 +1,7 @@
 dep "ddclient.managed"
 
 dep "dnsdynamic", :username, :password, :domain do
-  #requires "ddclient.managed"
+  requires "ddclient.managed"
 
   def config
     "/etc" / "ddclient.conf"
