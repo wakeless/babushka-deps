@@ -42,7 +42,6 @@ dep "phpunit.pear" do
   channel "phpunit"
   name "PHPUnit"
 
-  provides "phpunit"
 end
 
 dep "phpunitselenium.pear" do
