@@ -2,7 +2,7 @@ dep "php5.managed" do
   provides "php ~> 5.4.3"
 
   on :brew do
-    configure_args '--with-mysql'
+#    configure_args '--with-mysql'
     requires "brewtap".with("josegonzalez/php")
   end
 
