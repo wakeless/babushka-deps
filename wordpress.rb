@@ -1,5 +1,5 @@
 dep "upgraded wordpress" do
-  latest = "3.4"
+  latest = "3.4.1"
 
   def version
     vers = 'include "wp-includes/version.php"; echo $wp_version;'
