@@ -58,6 +58,12 @@ dep "shutdown_on_startup.upstart", :minutes do
 
 end
 
+dep "logrotate_on_boot.upstart" do
+  def executable
+    "logrotate -f /etc/logrotate.conf"
+  end
+end
+
 meta "upstart" do
   accepts_value_for :binary, :basename
   accepts_value_for :path, "/usr/local/bin"
