@@ -13,7 +13,7 @@ dep "php5.managed" do
 
   installs {
     via :brew, "php54"
-    via :apt, "php5", "php5-mysql", "php-pear", "php5-curl"
+    via :apt, "php5", "php5-mysql", "php-pear", "php5-curl", "php5-fpm"
   }
 end
 
@@ -79,6 +79,22 @@ meta "pear", :version do
     met? { log_shell "Checking for pear #{channel}/#{name}", "pear info #{channel}/#{name}" }
     meet { log_shell "Installing #{name}", "pear install --alldeps #{channel}/#{name} ", :sudo => true }
   }
+end
+
+meta "pecl" do
+  template {
+    requires "php5.managed"
+    met? { log_shell "Checking for PECL #{basename}", "pecl info #{basename}" }
+    meet { log_shell "Install pecl #{basename}", "pecl install -f #{basename}", :sudo => true }
+  }
+end
+
+dep "yaml.pecl" do
+  requires "libyaml.managed"
+end
+
+dep "libyaml.managed" do
+  provides []
 end
 
 dep "pear channel", :channel, :channel_name do
