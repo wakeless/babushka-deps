@@ -85,7 +85,8 @@ meta "pecl" do
   template {
     requires "php5.managed"
     met? { log_shell "Checking for PECL #{basename}", "pecl info #{basename}" }
-    meet { log_shell "Install pecl #{basename}", "pecl install -f #{basename}", :sudo => true }
+    meet { log_shell "Install pecl #{basename}", "pecl install -f #{basename}", :sudo => true, :input => "\n\r" }
+    after { sudo "apachectl -k restart" }
   }
 end
 
