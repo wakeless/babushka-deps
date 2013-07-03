@@ -52,11 +52,17 @@ dep "php-fpm", :domain, :port, :user, :group do
     "/opt/nginx/conf/vhosts/#{domain}.common"
   end
 
+  def web_home
+    "/home/#{user}" / "#{domain}"
+  end
+
   met? { php_fpm_conf.exists? }
 
   meet {
     render_erb "php/php-fpm.conf.erb", :to => php_fpm_conf, :sudo => true
     render_erb "php/nginx.conf.erb", :to => vhost_conf, :sudo => true
+    web_home.mkdir
+    web_home.chown(user, group)
   }
 end
 

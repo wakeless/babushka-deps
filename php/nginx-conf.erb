@@ -1,5 +1,5 @@
 server_name <%= domain %>
-root <%= "/home/#{user}/#{domain}" %>
+root <%= web_home %>
 
 location ~* \.(js|css|jpe?g|png|gif|ico|eot|woff|ttf|swf)$ {
   if ($request_uri ~ "\?[0-9]+$") {
