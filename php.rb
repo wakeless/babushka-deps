@@ -23,6 +23,26 @@ dep "php54.src" do
         '--with-jpeg-dir=/usr'
      ].compact.join(" ")
    }
+
+   met? { file_exists? "/etc/init.d/php-fpm" }
+
+   after {
+     sudo "cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm"
+     sudo "chmod +x /etc/init.d/php-fpm"
+     sudo "update-rc.d -f php-fpm defaults"
+   }
+end
+
+dep "php-fpm", :domain, :port, :user, :group do
+  requires "php54.src"
+
+  def php_fpm_conf
+    "/etc/php5/fpm/pool.d" / "#{domain}.conf"
+  end
+
+  meet {
+    render_erb "php/php-fpm.conf.erb", :to => vhost_conf, :sudo => true
+  }
 end
 
 dep "php5.managed" do
