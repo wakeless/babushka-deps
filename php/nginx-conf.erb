@@ -1,4 +1,7 @@
+server_name <%= domain %>
+
 location ~ \.php$ {
+
   include /opt/nginx/conf/fastcgi_params;
   fastcgi_pass 127.0.0.1:<%= port %>;
   fastcgi_index index.php;

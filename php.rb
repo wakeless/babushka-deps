@@ -48,10 +48,15 @@ dep "php-fpm", :domain, :port, :user, :group do
     "/etc/php5/fpm/pool.d" / "#{domain}.conf"
   end
 
+  def vhost_conf
+    "/opt/nginx/conf/vhosts/#{domain}.common"
+  end
+
   met? { php_fpm_conf.exists? }
 
   meet {
     render_erb "php/php-fpm.conf.erb", :to => php_fpm_conf, :sudo => true
+    render_erb "php/nginx.conf.erb", :to => vhost_conf, :sudo => true
   }
 end
 
