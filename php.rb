@@ -1,4 +1,6 @@
 dep "php54.src" do
+   requires "envato:libxml.managed", "benhoskings:openssl.lib", "benhoskings:libssl headers.managed", "libcurl4-openssl-dev.managed", "libjpeg-dev.managed", "libpng12-dev.managed", "libmcrypt-dev.managed", "libpcre3-dev.managed", "readline-common.managed", "libreadline-dev.managed"
+
    source 'http://au1.php.net/get/php-5.4.16.tar.gz/from/us1.php.net/mirror'
    provides 'php'
    configure_args L{
@@ -6,6 +8,7 @@ dep "php54.src" do
         '--enable-fpm',
         '--with-mysql',
         '--with-readline',
+'--with-libdir=/lib/x86_64-linux-gnu',
         '--with-pdo_mysql',
         '--with-curl',
         '--enable-pcntl',
@@ -13,7 +16,6 @@ dep "php54.src" do
         '--enable-debug',
         '--with-zlib',
         '--with-pdo',
-        '--with-apxs2',
         '--enable-so',
         '--with-mcrypt',
         '--with-gd',
@@ -24,7 +26,7 @@ dep "php54.src" do
      ].compact.join(" ")
    }
 
-   met? { file_exists? "/etc/init.d/php-fpm" }
+   met? { ("/etc/init.d" / "php-fpm").exists? }
 
    after {
      sudo "cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm"
@@ -34,15 +36,29 @@ dep "php54.src" do
 end
 
 dep "php-fpm", :domain, :port, :user, :group do
-  requires "php54.src"
+#  requires "php54.src"
+  requires "benhoskings:user setup for provisioning".with(:username => user)
+
+  def group
+    user
+  end
 
   def php_fpm_conf
     "/etc/php5/fpm/pool.d" / "#{domain}.conf"
   end
 
+  met? { php_fpm_conf.exists? }
+
   meet {
-    render_erb "php/php-fpm.conf.erb", :to => vhost_conf, :sudo => true
+    render_erb "php/php-fpm.conf.erb", :to => php_fpm_conf, :sudo => true
   }
+end
+
+%w(libcurl4-openssl-dev libjpeg-dev libpng12-dev libmcrypt-dev libpcre3-dev readline-common libreadline-dev).each do |lib|
+puts "#{lib}.managed"
+  dep "#{lib}.managed" do
+    provides []
+  end
 end
 
 dep "php5.managed" do
@@ -50,19 +66,19 @@ dep "php5.managed" do
 
   on :brew do
     requires "brewtap".with("josegonzalez/php")
+	  meet {
+	    pkg_manager.install! packages, ["--with-mysql"]
+	  }
   end
 
   on :apt do
-    requires "ppa".with("ondrej/php5")
+    requires "ppa".with("ppa:ondrej/php5")
   end
 
 
   installs {
     via :brew, "php54"
     via :apt, "php5", "php5-mysql", "php-pear", "php5-curl", "php5-fpm"
-  }
-  meet {
-    pkg_manager.install! packages, ["--with-mysql"]
   }
 end
 
