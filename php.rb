@@ -1,8 +1,34 @@
+dep "php54.src" do
+   source 'http://au1.php.net/get/php-5.4.16.tar.gz/from/us1.php.net/mirror'
+   provides 'php'
+   configure_args L{
+     [
+        '--enable-fpm',
+        '--with-mysql',
+        '--with-readline',
+        '--with-pdo_mysql',
+        '--with-curl',
+        '--enable-pcntl',
+        '--enable-mbstring',
+        '--enable-debug',
+        '--with-zlib',
+        '--with-pdo',
+        '--with-apxs2',
+        '--enable-so',
+        '--with-mcrypt',
+        '--with-gd',
+        '--with-openssl',
+        '--with-jpeg-dir',
+        '--with-png-dir',
+        '--with-jpeg-dir=/usr'
+     ].compact.join(" ")
+   }
+end
+
 dep "php5.managed" do
-  provides "php ~> 5.4.3"
+  provides "php ~> 5.4.11"
 
   on :brew do
-#    configure_args '--with-mysql'
     requires "brewtap".with("josegonzalez/php")
   end
 
@@ -14,6 +40,9 @@ dep "php5.managed" do
   installs {
     via :brew, "php54"
     via :apt, "php5", "php5-mysql", "php-pear", "php5-curl", "php5-fpm"
+  }
+  meet {
+    pkg_manager.install! packages, ["--with-mysql"]
   }
 end
 
@@ -32,20 +61,20 @@ end
 
 
 dep "dbunit.pear" do
-  requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony-project.com", "symfony")
+  requires "phpunit.pear"
   channel "phpunit"
   name "DBUnit"
 end
 
 dep "phpunit.pear" do
-  requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony-project.com", "symfony")
+  requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony.com", "symfony2")
   channel "phpunit"
   name "PHPUnit"
 
 end
 
 dep "phpunitselenium.pear" do
-  requires "pear channel".with("pear.phpunit.de", "phpunit"), "pear channel".with("pear.symfony-project.com", "symfony")
+  requires "phpunit.pear"
   channel "phpunit"
   name "PHPUnit_Selenium"
 end
@@ -74,10 +103,10 @@ meta "pear", :version do
   accepts_value_for :name
 
   template {
-    requires "php5.managed"
-    before { shell "pear channel-update #{channel}" }
+    #requires "php5.managed"
+    #before { shell "pear channel-update #{channel}" }
     met? { log_shell "Checking for pear #{channel}/#{name}", "pear info #{channel}/#{name}" }
-    meet { log_shell "Installing #{name}", "pear install --alldeps #{channel}/#{name} ", :sudo => true }
+    meet { log_shell "Installing #{name}", "pear install --alldeps #{channel}/#{name}", :sudo => true }
   }
 end
 
@@ -104,3 +133,7 @@ dep "pear channel", :channel, :channel_name do
 end
 
 
+dep "php composer" do
+  provides "composer.phar"
+  meet { `curl -s https://getcomposer.org/installer | php` }
+end
