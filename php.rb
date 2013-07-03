@@ -38,7 +38,9 @@ end
 dep "php-fpm", :domain, :port, :user, :group do
 #  requires "php54.src"
   requires "benhoskings:user setup for provisioning".with(:username => user),
-    "benhoskings:vhost enabled.nginx".with(:vhost_type => "proxy", :domain => domain, :proxy_host => "127.0.0.1", :proxy_port => port)
+    "benhoskings:vhost enabled.nginx".with(:vhost_type => "proxy", :domain => domain, :proxy_host => "127.0.0.1", :proxy_port => port),
+    "running.nginx",
+    "self signed cert.nginx".with(:domain => domain),
 
   def group
     user
