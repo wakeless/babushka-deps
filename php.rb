@@ -96,6 +96,18 @@ dep "php5.managed" do
   }
 end
 
+dep "php composer" do
+  def path 
+    "/usr/local/bin" / "composer"
+  end
+  met? { path.exists? }
+  meet { 
+    shell "curl -sS https://getcomposer.org/installer | php"
+    shell "mv composer.phar #{path}"
+  }
+end
+
+
 dep "brewtap", :tap_repo do
   met? {
     !shell("brew tap").split("\n").grep(tap_repo).empty?
@@ -183,7 +195,3 @@ dep "pear channel", :channel, :channel_name do
 end
 
 
-dep "php composer" do
-  provides "composer.phar"
-  meet { `curl -s https://getcomposer.org/installer | php` }
-end
