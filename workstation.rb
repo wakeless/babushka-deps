@@ -5,6 +5,8 @@ dep "workstation" do
   requires "benhoskings:Alfred.app"
   requires "benhoskings:Skype.app"
   requires "benhoskings:Twitter.app"
+  requires "wget.managed"
+  requires "iterm2.app"
 
   requires "currinda dev"
 end
@@ -18,3 +20,5 @@ end
 dep "iterm2.app" do
   source "http://www.iterm2.com/downloads/beta/iTerm2-1_0_0_20130624.zip"
 end
+
+dep "wget.managed"
