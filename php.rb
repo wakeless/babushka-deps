@@ -78,11 +78,20 @@ end
 dep "php5.managed" do
   provides "php ~> 5.4.11"
 
+
   on :brew do
+    def apache_conf
+      "/usr/local/etc/apache2/httpd.conf".p
+    end
+
     requires "brewtap".with("josegonzalez/php")
 	  meet {
 	    pkg_manager.install! packages, ["--with-mysql"]
 	  }
+    after {
+      apache_conf.append "LoadModule php5_module    /usr/local/opt/php54/libexec/apache2/libphp5.so"
+      apache_conf.append "AddType application/x-httpd-php .php"
+    }
   end
 
   on :apt do
@@ -94,6 +103,17 @@ dep "php5.managed" do
     via :brew, "php54"
     via :apt, "php5", "php5-mysql", "php-pear", "php5-curl", "php5-fpm"
   }
+end
+
+meta "php" do
+  def conf_path
+    "/usr/local/etc/php/5.4/php.ini"
+  end
+end
+
+dep "short tags.php" do
+  met? { !shell("cat #{conf_path}").split("\n").grep("short_open_tag = On").empty?}
+  meet { shell "sed -i '' -e 's/short_open_tag = Off/short_open_tag = On/' '#{conf_path}'" }
 end
 
 dep "php composer" do
@@ -187,6 +207,11 @@ end
 
 dep "libyaml.managed" do
   provides []
+  on :osx do
+    after {
+      shell "brew link libyaml"
+    }
+  end
 end
 
 dep "pear channel", :channel, :channel_name do

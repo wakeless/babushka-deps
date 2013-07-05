@@ -30,8 +30,9 @@ end
 dep 'mysql.managed' do
   installs {
     via :apt, %w[mysql-server libmysqlclient-dev]
+    via :brew, "mysql"
   }
-  provides 'mysql'
+  provides 'mysql ~> 5.6.8'
 end
 
 dep "mysql tmpfs" do

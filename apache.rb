@@ -55,3 +55,39 @@ dep "apache vhost", :host, :public_path do
   end
 
 end
+
+meta "apache" do
+    def apache_root
+      "/usr/local/etc/apache2/httpd.conf".p
+    end
+end
+
+dep 'self signed cert.apache', :domain, :nginx_prefix, :country, :state, :city, :organisation, :organisational_unit, :email do
+  requires "apache.managed"
+
+  def cert_path
+    apache_root / "ssl"
+  end
+
+  met? { %w[key crt].all? {|ext| (cert_path / "#{domain}.#{ext}").exists? } }
+  meet {
+    cd cert_path, :create => "700" do
+      log_shell("generating private key", "openssl genrsa -out #{domain}.key 2048", :sudo => true) and
+      log_shell("generating certificate", "openssl req -new -key #{domain}.key -out #{domain}.csr",
+        :input => [
+          country.default('AU'),
+          state,
+          city.default(''),
+          organisation,
+          organisational_unit.default(''),
+          domain,
+          email,
+          '', # password
+          '', # optional company name
+          '' # done
+        ].join("\n")
+      ) and
+      log_shell("signing certificate with key", "openssl x509 -req -days 365 -in #{domain}.csr -signkey #{domain}.key -out #{domain}.crt", :sudo => true)
+    end
+  }
+end
