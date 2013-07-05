@@ -3,10 +3,9 @@ dep "workstation" do
   requires "benhoskings:Firefox.app"
   requires "benhoskings:Vim.app"
   requires "benhoskings:Alfred.app"
-  requires "benhoskings:Skype.app"
-  requires "benhoskings:Twitter.app"
   requires "wget.managed"
-  requires "iterm2.app"
+  requires "ack.managed"
+  requires "iTerm.app"
 
   requires "currinda dev"
 end
@@ -23,11 +22,12 @@ dep "currinda dev" do
   requires "bundler.gem"
 end
 
-dep "iterm2.app" do
+dep "iTerm.app" do
   source "http://www.iterm2.com/downloads/beta/iTerm2-1_0_0_20130624.zip"
 end
 
 
+dep "ack.managed"
 dep "wget.managed"
 dep "bundler.gem" do
   provides "bundle"
