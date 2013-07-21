@@ -61,6 +61,10 @@ dep 'vhost configured.nginx', :vhost_type, :domain, :domain_aliases, :path, :lis
     ).uniq
   end
 
+  def upstream_server
+    "127.0.0.1:#{proxy_port}"
+  end
+
   vhost_type.default('php').choose(%w[php proxy static])
   path.default("~#{domain}/current".p) if shell?('id', domain)
 
@@ -141,7 +145,7 @@ end
 
 dep 'configured.nginx', :nginx_prefix do
   nginx_prefix.default!('/opt/nginx') # This is required because nginx.src might be cached.
-  requires 'nginx.src'.with(:nginx_prefix => nginx_prefix), 'www user and group', 'nginx.logrotate'
+  requires 'nginx.src'.with(:nginx_prefix => nginx_prefix), 'benhoskings:www user and group', 'benhoskings:nginx.logrotate'
   met? {
     Babushka::Renderable.new(nginx_conf).from?(dependency.load_path.parent / "nginx/nginx.conf.erb")
   }
@@ -155,9 +159,9 @@ dep 'nginx.src', :nginx_prefix, :version, :upload_module_version do
   version.default!('1.2.7')
   upload_module_version.default!('2.2')
 
-  requires 'pcre.managed', 'libssl headers.managed', 'zlib headers.managed'
+  requires 'benhoskings:pcre.managed', 'benhoskings:libssl headers.managed', 'benhoskings:zlib headers.managed'
   on :linux do
-    requires "unzip.managed"
+    requires "benhoskings:unzip.managed"
   end
 
   source "http://nginx.org/download/nginx-#{version}.tar.gz"
@@ -192,6 +196,8 @@ dep 'nginx.src', :nginx_prefix, :version, :upload_module_version do
     end
   }
 end
+
+
 
 dep 'http basic logins.nginx', :nginx_prefix, :domain, :username, :pass do
   nginx_prefix.default!('/opt/nginx')
