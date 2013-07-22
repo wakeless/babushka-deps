@@ -5,6 +5,8 @@ dep "php54.src" do
    provides 'php'
    configure_args L{
      [
+	'--prefix=/opt/php',
+	'--exec-prefix=/usr/local',
         '--enable-fpm',
         '--with-mysql',
         '--with-readline',
@@ -26,7 +28,7 @@ dep "php54.src" do
      ].compact.join(" ")
    }
 
-   met? { ("/etc/init.d" / "php-fpm").exists? }
+   met? { ("/etc/init.d" / "php-fpm").exists? && "/opt" / "php".is_dir? }
 
    after {
      sudo "cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm"
@@ -157,15 +159,14 @@ meta "pecl" do
     requires "php5.managed"
     met? { log_shell "Checking for PECL #{basename}", "pecl info #{basename}" }
     meet { log_shell "Install pecl #{basename}", "pecl install -f #{basename}", :sudo => true, :input => "\n\r" }
-    after { sudo "apachectl -k restart" }
   }
 end
 
 dep "yaml.pecl" do
-  requires "libyaml.managed"
+  requires "libyaml-dev.managed"
 end
 
-dep "libyaml.managed" do
+dep "libyaml-dev.managed" do
   provides []
 end
 
@@ -176,6 +177,9 @@ end
 
 
 dep "php composer" do
-  provides "composer.phar"
-  meet { `curl -s https://getcomposer.org/installer | php` }
+  met? { in_path? "composer.phar" }
+  meet { 
+    `curl -s https://getcomposer.org/installer | php` 
+    shell 'mv composer.phar /usr/local/bin/'
+  }
 end
