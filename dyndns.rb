@@ -4,7 +4,7 @@ dep "dnsdynamic", :username, :password, :domain do
   requires "ddclient.managed"
 
   def config
-    "/etc" / "ddclient.conf"
+    "/etc/default" / "ddclient.conf"
   end
 
   met? { config.exists? }

@@ -1,6 +1,6 @@
 
 dep "selenium", :version, :path do
-  version.default!("2.26.0")
+  version.default!("2.33.0")
   path.default!("/usr/local")
 
   def selenium_src

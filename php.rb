@@ -41,6 +41,8 @@ dep "php-fpm", :domain, :port, :user, :group do
 #  requires "php54.src"
   requires "benhoskings:user setup for provisioning".with(:username => user),
     "vhost enabled.nginx".with(:vhost_type => "php", :domain => domain, :proxy_host => "127.0.0.1", :proxy_port => port)
+    "benhoskings:self signed cert.nginx".with(:domain => domain, :nginx_prefix => "/opt/nginx"),
+    "benhoskings:running.nginx"
 
   def group
     user
@@ -54,11 +56,17 @@ dep "php-fpm", :domain, :port, :user, :group do
     "/opt/nginx/conf/vhosts/#{domain}.common"
   end
 
+  def web_home
+    "/home/#{user}" / "#{domain}"
+  end
+
   met? { php_fpm_conf.exists? }
 
   meet {
     render_erb "php/php-fpm.conf.erb", :to => php_fpm_conf, :sudo => true
     render_erb "php/nginx.conf.erb", :to => vhost_conf, :sudo => true
+    web_home.mkdir
+    web_home.chown(user, group)
   }
 end
 
@@ -72,11 +80,20 @@ end
 dep "php5.managed" do
   provides "php ~> 5.4.11"
 
+
   on :brew do
+    def apache_conf
+      "/usr/local/etc/apache2/httpd.conf".p
+    end
+
     requires "brewtap".with("josegonzalez/php")
 	  meet {
 	    pkg_manager.install! packages, ["--with-mysql"]
 	  }
+    after {
+      apache_conf.append "LoadModule php5_module    /usr/local/opt/php54/libexec/apache2/libphp5.so"
+      apache_conf.append "AddType application/x-httpd-php .php"
+    }
   end
 
   on :apt do
@@ -89,6 +106,29 @@ dep "php5.managed" do
     via :apt, "php5", "php5-mysql", "php-pear", "php5-curl", "php5-fpm"
   }
 end
+
+meta "php" do
+  def conf_path
+    "/usr/local/etc/php/5.4/php.ini"
+  end
+end
+
+dep "short tags.php" do
+  met? { !shell("cat #{conf_path}").split("\n").grep("short_open_tag = On").empty?}
+  meet { shell "sed -i '' -e 's/short_open_tag = Off/short_open_tag = On/' '#{conf_path}'" }
+end
+
+dep "php composer" do
+  def path 
+    "/usr/local/bin" / "composer"
+  end
+  met? { path.exists? }
+  meet { 
+    shell "curl -sS https://getcomposer.org/installer | php"
+    shell "mv composer.phar #{path}"
+  }
+end
+
 
 dep "brewtap", :tap_repo do
   met? {
@@ -168,6 +208,11 @@ end
 
 dep "libyaml-dev.managed" do
   provides []
+  on :osx do
+    after {
+      shell "brew link libyaml"
+    }
+  end
 end
 
 dep "pear channel", :channel, :channel_name do
