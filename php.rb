@@ -1,8 +1,10 @@
 dep "php54.src" do
-   requires "envato:libxml.managed", "benhoskings:openssl.lib", "benhoskings:libssl headers.managed", "libcurl4-openssl-dev.managed", "libjpeg-dev.managed", "libpng12-dev.managed", "libmcrypt-dev.managed", "libpcre3-dev.managed", "readline-common.managed", "libreadline-dev.managed"
+   requires "envato:libxml.managed", "benhoskings:openssl.lib", "benhoskings:libssl headers.managed", "libcurl4-openssl-dev.managed", "libjpeg-dev.managed", "libpng12-dev.managed", "libmcrypt-dev.managed", "libpcre3-dev.managed", "readline-common.managed", "libreadline-dev.managed", "libfreetype6-dev.managed"
 
-   source 'http://au1.php.net/get/php-5.4.16.tar.gz/from/us1.php.net/mirror'
-   provides 'php'
+   def version; "5.4.16"; end;
+
+   source "http://au1.php.net/get/php-#{version}.tar.gz/from/us1.php.net/mirror"
+   provides "php = #{version}"
    configure_args L{
      [
 	'--prefix=/opt/php',
@@ -24,13 +26,14 @@ dep "php54.src" do
         '--with-openssl',
         '--with-jpeg-dir',
         '--with-png-dir',
-        '--with-jpeg-dir=/usr'
+        '--with-jpeg-dir=/usr',
+        '--with-freetype-dir=/usr',
      ].compact.join(" ")
    }
 
-   met? { ("/etc/init.d" / "php-fpm").exists? && "/opt" / "php".is_dir? }
+   met? { ("/etc/init.d" / "php-fpm").exists? && ("/opt" / "php").dir? }
 
-   after {
+   postinstall {
      sudo "cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm"
      sudo "chmod +x /etc/init.d/php-fpm"
      sudo "update-rc.d -f php-fpm defaults"
@@ -38,18 +41,14 @@ dep "php54.src" do
 end
 
 dep "php-fpm", :domain, :port, :user, :group do
-#  requires "php54.src"
-  requires "benhoskings:user setup for provisioning".with(:username => user),
-    "vhost enabled.nginx".with(:vhost_type => "php", :domain => domain, :proxy_host => "127.0.0.1", :proxy_port => port),
-    "benhoskings:self signed cert.nginx".with(:domain => domain, :nginx_prefix => "/opt/nginx"),
-    "benhoskings:running.nginx"
+  requires "php54.src"
 
   def group
     user
   end
 
   def php_fpm_conf
-    "/etc/php5/fpm/pool.d" / "#{domain}.conf"
+    "/opt/php/etc/fpm/pool.d" / "#{domain}.conf"
   end
 
   def vhost_conf
@@ -63,15 +62,18 @@ dep "php-fpm", :domain, :port, :user, :group do
   met? { php_fpm_conf.exists? }
 
   meet {
+    php_fpm_conf.dir.create
     render_erb "php/php-fpm.conf.erb", :to => php_fpm_conf, :sudo => true
     render_erb "php/nginx.conf.erb", :to => vhost_conf, :sudo => true
     web_home.mkdir
-    web_home.chown(user, group)
+    sudo "chown #{user}:#{group} #{web_home}"
+  }
+  after {
+    sudo "service php-fpm restart"
   }
 end
 
-%w(libcurl4-openssl-dev libjpeg-dev libpng12-dev libmcrypt-dev libpcre3-dev readline-common libreadline-dev).each do |lib|
-puts "#{lib}.managed"
+%w(libfreetype6-dev libcurl4-openssl-dev libjpeg-dev libpng12-dev libmcrypt-dev libpcre3-dev readline-common libreadline-dev).each do |lib|
   dep "#{lib}.managed" do
     provides []
   end

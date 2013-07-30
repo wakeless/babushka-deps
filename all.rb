@@ -129,3 +129,26 @@ dep "hostfile line", :host, :address do
   met? { !shell("cat #{host_file}").split("\n").grep(host_line).empty? }
   meet { append_to_file host_line, "/etc/hosts", :sudo => true }
 end
+
+
+dep "autossh.managed"
+dep "ssh_tunnel.upstart", :user, :host, :port do
+  requires "autossh.managed"
+  requires "public key"
+
+  start_on "net-device-up IFACE=eth0"
+
+  def service
+    upstart_path / "#{basename}.#{host}.#{port}.conf"
+  end
+
+  def executable
+    "autossh -M 0 -4 -N #{user}@#{host} -L #{port}:#{host}:#{port} -o 'ServerAliveInterval 60' -o 'ServerAliveCountMax 3' -o BatchMode=yes -o StrictHostKeyChecking=no"
+  end
+end
+
+dep 'public key' do
+  met? { '~/.ssh/id_dsa.pub'.p.grep(/^ssh-dss/) }
+  meet { log shell("ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ''") }
+  after { shell("cat ~/.ssh/id_dsa.pub") }
+end

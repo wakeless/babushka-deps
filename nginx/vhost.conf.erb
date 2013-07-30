@@ -6,7 +6,7 @@ upstream <%= upstream_name %> {
 
 <% if enable_http[/^y/] %>
 server {
-  listen <%= listen_host %>:<%= listen_port %>;
+  listen <%= listen_port %>;
   charset utf-8;
 
   <% if force_https[/^y/] %>
@@ -19,7 +19,7 @@ server {
 
 <% if enable_https[/^y/] %>
 server {
-  listen <%= listen_host %>:443;
+  listen 443;
   charset utf-8;
 
   ssl                  on;

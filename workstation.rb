@@ -32,3 +32,5 @@ dep "wget.managed"
 dep "bundler.gem" do
   provides "bundle"
 end
+
+dep "vim.managed"
