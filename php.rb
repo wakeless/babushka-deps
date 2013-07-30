@@ -184,7 +184,7 @@ dep "phpunit.jenkins" do
   provides "checkstyle", "cloverphp", "dry", "htmlpublisher", "jdepend", "plot", "pmd", "violations", "xunit"
 end
 
-meta "pear", :version do
+meta "pear" do
   accepts_value_for :channel
   accepts_value_for :name
 
