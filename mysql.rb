@@ -35,6 +35,10 @@ dep 'mysql.managed' do
   provides 'mysql ~> 5.6.8'
 end
 
+dep "mysql-client.managed" do
+  provides "mysql"
+end
+
 dep "mysql tmpfs" do
   requires "mysql.managed"
   after {

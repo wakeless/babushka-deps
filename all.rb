@@ -143,12 +143,12 @@ dep "ssh_tunnel.upstart", :user, :host, :port do
   end
 
   def executable
-    "autossh -M 0 -4 -N #{user}@#{host} -L #{port}:#{host}:#{port} -o 'ServerAliveInterval 60' -o 'ServerAliveCountMax 3' -o BatchMode=yes -o StrictHostKeyChecking=no"
+    "autossh -M 0 -4 -N #{user}@#{host} -L #{port}:127.0.0.1:#{port} -o 'ServerAliveInterval 60' -o 'ServerAliveCountMax 3' -o BatchMode=yes -o StrictHostKeyChecking=no"
   end
 end
 
 dep 'public key' do
   met? { '~/.ssh/id_dsa.pub'.p.grep(/^ssh-dss/) }
   meet { log shell("ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ''") }
-  after { shell("cat ~/.ssh/id_dsa.pub") }
+  after { log shell("cat ~/.ssh/id_dsa.pub") }
 end

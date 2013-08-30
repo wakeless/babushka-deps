@@ -1,3 +1,7 @@
+dep "php5" do
+  requires "php54.src"
+end
+
 dep "php54.src" do
    requires "envato:libxml.managed", "benhoskings:openssl.lib", "benhoskings:libssl headers.managed", "libcurl4-openssl-dev.managed", "libjpeg-dev.managed", "libpng12-dev.managed", "libmcrypt-dev.managed", "libpcre3-dev.managed", "readline-common.managed", "libreadline-dev.managed", "libfreetype6-dev.managed"
 
@@ -7,8 +11,7 @@ dep "php54.src" do
    provides "php = #{version}"
    configure_args L{
      [
-	'--prefix=/opt/php',
-	'--exec-prefix=/usr/local',
+	'--prefix=/usr/local',
         '--enable-fpm',
         '--with-mysql',
         '--with-readline',
@@ -31,7 +34,7 @@ dep "php54.src" do
      ].compact.join(" ")
    }
 
-   met? { ("/etc/init.d" / "php-fpm").exists? && ("/opt" / "php").dir? }
+   met? { ("/etc/init.d" / "php-fpm").exists? }
 
    postinstall {
      sudo "cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm"
@@ -40,33 +43,41 @@ dep "php54.src" do
    }
 end
 
-dep "php-fpm", :domain, :port, :user, :group do
+dep "php-fpm", :domain, :port, :user, :group, :path do
   requires "php54.src"
 
   def group
     user
   end
 
+  def php_fpm_conf_dir
+    "/usr/local" / "etc"
+  end
+
   def php_fpm_conf
-    "/opt/php/etc/fpm/pool.d" / "#{domain}.conf"
+    php_fpm_conf_dir / "php-fpm.conf"
+  end
+
+
+  def php_fpm_pool_conf
+    php_fpm_conf_dir / "fpm/pool.d" / "#{domain}.conf"
   end
 
   def vhost_conf
     "/opt/nginx/conf/vhosts/#{domain}.common"
   end
 
-  def web_home
-    "/home/#{user}" / "#{domain}"
-  end
-
-  met? { php_fpm_conf.exists? }
+  met? { 
+    php_fpm_conf.exists? and php_fpm_pool_conf.exists?
+  }
 
   meet {
-    php_fpm_conf.dir.create
+    php_fpm_conf_dir.mkdir
     render_erb "php/php-fpm.conf.erb", :to => php_fpm_conf, :sudo => true
-    render_erb "php/nginx.conf.erb", :to => vhost_conf, :sudo => true
-    web_home.mkdir
-    sudo "chown #{user}:#{group} #{web_home}"
+    php_fpm_pool_conf.dir.create
+    render_erb "php/php-fpm-host.conf.erb", :to => php_fpm_pool_conf, :sudo => true
+    sudo "mkdir #{path}"
+    sudo "chown #{user}:#{group} #{path}"
   }
   after {
     sudo "service php-fpm restart"
@@ -198,9 +209,23 @@ end
 
 meta "pecl" do
   template {
-    requires "php5.managed"
-    met? { log_shell "Checking for PECL #{basename}", "pecl info #{basename}" }
-    meet { log_shell "Install pecl #{basename}", "pecl install -f #{basename}", :sudo => true, :input => "\n\r" }
+    def php_conf
+      "/usr/local/lib" / "php.ini"
+    end
+    
+    requires "php5"
+    before {
+      shell 'pear config-set temp_dir ~/.tmp'
+    }
+
+    met? { 
+      shell "pecl info #{basename}" and 
+      !shell("php -i").split("\n").grep("yaml").empty?
+    }
+    meet {
+      log_shell "Install pecl #{basename}", "pecl install -f #{basename}", :sudo => true, :input => "\n\r" 
+      php_conf.append "extension=#{basename}.so"
+    }
   }
 end
 
