@@ -1,7 +1,18 @@
 start on <%= start_on %>
 stop on <%= stop_on %>
 
+
+<%= "setuid #{uid}" if uid %>
+<%= "setgid #{gid}" if uid %>
+
+<%= environment %>
+
+<% if executable %>
 script
   <%= executable %>
 end script
+<% end %>
+
+<%= "pre-start exec #{prestart}" if prestart %>
+<%= "post-stop exec #{poststop}" if poststop %>
 

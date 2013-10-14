@@ -1,8 +1,6 @@
-<% if vhost_type == 'php' %>
 upstream <%= upstream_name %> {
   server <%= upstream_server %> fail_timeout=0;
 }
-<% end %>
 
 <% if enable_http[/^y/] %>
 server {

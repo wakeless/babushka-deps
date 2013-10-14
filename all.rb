@@ -69,6 +69,14 @@ meta "upstart" do
   accepts_value_for :path, "/usr/local/bin"
   accepts_value_for :start_on, "runlevel [2345]"
   accepts_value_for :stop_on, "runlevel [!2345]"
+  accepts_value_for :uid, ""
+  accepts_value_for :gid, ""
+  accepts_value_for :prestart, ""
+  accepts_value_for :poststop, ""
+  accepts_value_for :service_name, ""
+
+
+  def environment; "" end
 
   def executable
     "#{path / binary}"
@@ -79,7 +87,7 @@ meta "upstart" do
   end
 
   def service
-    upstart_path / "#{basename}.conf"
+    upstart_path / "#{service_name || basename}.conf"
   end
 
   template {

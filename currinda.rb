@@ -23,10 +23,60 @@ dep "currinda web" do
     "php-fpm".with(:domain => domain, :user => user, :port => 9001, :path => path),
 
     "benhoskings:self signed cert.nginx".with(:domain => domain, :nginx_prefix => "/opt/nginx", :state => "VIC", :country => "AU", :organisation => "Currinda", :email => "noone@example.com"),
-    "running.nginx".with(:nginx_prefix => "/opt/nginx")
+    "running.nginx".with(:nginx_prefix => "/opt/nginx"),
+    "running.postfix"
 end
 
 dep "currinda tunnel" do
   requires "ssh_tunnel.upstart".with(:user => "tunnel-user", :host => "currinda.com", :port => 4040)
   requires "ssh_tunnel.upstart".with(:user => "tunnel-user", :host => "currinda.com", :port => 3306)
+end
+
+dep "currinda api", :username, :path, :port, :domain do
+  username.default("api")
+  port.default("4040")
+  path.default("/home/#{username}/current")
+  domain.default("api.currinda.com")
+
+  requires [
+    "benhoskings:ruby.src",
+    "bundler.gem",
+    "mysql-client.managed",
+    "libmysqlclient-dev.lib",
+    'conversation:libxml.lib', # for nokogiri
+    'conversation:libxslt.lib', # for nokogiri
+
+    'benhoskings:user exists'.with(:username => username),
+    'benhoskings:passwordless ssh logins'.with(username, public_key),
+    "vhost enabled.nginx".with(
+      :vhost_type => "unicorn",
+      :domain => domain,
+      :proxy_host => "127.0.0.1",
+      :path => path
+    ),
+    "unicorn.upstart".with(
+      :app_path => path
+    ),
+    "benhoskings:self signed cert.nginx".with(
+      :domain => domain,
+      :nginx_prefix => "/opt/nginx",
+      :state => "VIC",
+      :country => "AU",
+      :organisation => "Currinda",
+      :email => "noone@example.com"
+    ),
+    "running.nginx".with(:nginx_prefix => "/opt/nginx"),
+    "vhost enabled.nginx".with(
+      :vhost_type => "unicorn",
+      :domain => domain,
+      :proxy_host => "127.0.0.1",
+      :proxy_port => port,
+      :path => path,
+      :enable_https => "y"
+    ),
+  ]
+end
+
+dep "bundler.gem" do
+  provides "bundle"
 end

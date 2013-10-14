@@ -3,6 +3,8 @@ dep 'mysql.gem' do
   provides []
 end
 
+dep "libmysqlclient-dev.lib"
+
 dep 'mysql access' do
   requires 'existing mysql db'
   define_var :db_user, :default => :username
