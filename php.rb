@@ -11,26 +11,29 @@ dep "php54.src" do
    provides "php = #{version}"
    configure_args L{
      [
-	'--prefix=/usr/local',
-        '--enable-fpm',
-        '--with-mysql',
-        '--with-readline',
-'--with-libdir=/lib/x86_64-linux-gnu',
-        '--with-pdo_mysql',
-        '--with-curl',
-        '--enable-pcntl',
-        '--enable-mbstring',
-        '--enable-debug',
-        '--with-zlib',
-        '--with-pdo',
-        '--enable-so',
-        '--with-mcrypt',
-        '--with-gd',
-        '--with-openssl',
-        '--with-jpeg-dir',
-        '--with-png-dir',
-        '--with-jpeg-dir=/usr',
-        '--with-freetype-dir=/usr',
+      '--prefix=/usr/local',
+      '--with-mysql',
+      '--enable-fpm',
+      '--with-readline',
+      '--with-pdo_mysql',
+      '--with-curl',
+      '--enable-pcntl',
+      '--enable-mbstring',
+      '--enable-debug',
+      '--with-zlib',
+      '--with-pdo',
+      '--with-apxs2',
+      '--enable-so',
+      '--with-mcrypt',
+      '--with-gd',
+      '--enable-gd-native-ttf',
+      '--with-openssl',
+      '--with-png-dir=/usr',
+      '--with-jpeg-dir=/usr',
+      '--with-freetype-dir=usr',
+      '--with-ttf',
+      '--with-exif',
+      '--enable-bcmath'
      ].compact.join(" ")
    }
 
@@ -76,7 +79,7 @@ dep "php-fpm", :domain, :port, :user, :group, :path do
     render_erb "php/php-fpm.conf.erb", :to => php_fpm_conf, :sudo => true
     php_fpm_pool_conf.dir.create
     render_erb "php/php-fpm-host.conf.erb", :to => php_fpm_pool_conf, :sudo => true
-    sudo "mkdir #{path}"
+    sudo "mkdir -p #{path}"
     sudo "chown #{user}:#{group} #{path}"
   }
   after {

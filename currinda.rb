@@ -6,10 +6,22 @@ dep "currinda web" do
   requires "php54.src", "php composer"
   requires "yaml.pecl"
 
-  user = "currinda-testing"
+  user = "live"
   domain = "*.currinda.com"
   port = "9001"
   path = "/home/#{user}/web/current"
+
+  requires "benhoskings:user setup for provisioning".with(:username => "staging", :key => public_key),
+    "vhost enabled.nginx".with(
+      :vhost_type => "php",
+      :domain => "members.asnevents.com.au",
+      :proxy_host => "127.0.0.1",
+      :proxy_port => 9002,
+      :path => "/home/staging/web/current",
+      :enable_https => "y"
+    ),
+    "php-fpm".with(:domain => "members.asnevents.com.au", :user => "staging", :port => 9002, :path => "/home/staging/web/current"),
+    "benhoskings:self signed cert.nginx".with(:domain => "members.asnevents.com.au", :nginx_prefix => "/opt/nginx", :state => "VIC", :country => "AU", :organisation => "Currinda", :email => "noone@example.com")
 
   requires "benhoskings:user setup for provisioning".with(:username => user, :key => public_key),
     "vhost enabled.nginx".with(
@@ -21,7 +33,6 @@ dep "currinda web" do
       :enable_https => "y"
     ),
     "php-fpm".with(:domain => domain, :user => user, :port => 9001, :path => path),
-
     "benhoskings:self signed cert.nginx".with(:domain => domain, :nginx_prefix => "/opt/nginx", :state => "VIC", :country => "AU", :organisation => "Currinda", :email => "noone@example.com"),
     "running.nginx".with(:nginx_prefix => "/opt/nginx"),
     "running.postfix"

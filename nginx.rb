@@ -28,6 +28,7 @@ meta :nginx do
 end
 
 dep 'vhost enabled.nginx', :vhost_type, :domain, :domain_aliases, :path, :listen_host, :listen_port, :proxy_host, :proxy_port, :nginx_prefix, :enable_http, :enable_https, :force_https do
+  nginx_prefix.default!('/opt/nginx')
   requires 'vhost configured.nginx'.with(vhost_type, domain, domain_aliases, path, listen_host, listen_port, proxy_host, proxy_port, nginx_prefix, enable_http, enable_https, force_https)
   met? { vhost_link.exists? }
   meet {
@@ -46,6 +47,7 @@ dep 'vhost configured.nginx', :vhost_type, :domain, :domain_aliases, :path, :lis
   enable_http.default!('yes')
   enable_https.default('no')
   force_https.default('no')
+  nginx_prefix.default!('/opt/nginx')
   def www_aliases
     "#{domain} #{domain_aliases}".split(/\s+/).reject {|d|
       d[/^\*\./] || d[/^www\./]
