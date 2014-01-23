@@ -157,7 +157,7 @@ end
 
 dep 'nginx.src', :nginx_prefix, :version, :upload_module_version do
   nginx_prefix.default!("/opt/nginx")
-  version.default!('1.2.7')
+  version.default!('1.5.6')
   upload_module_version.default!('2.2')
 
   requires 'benhoskings:pcre.managed', 'benhoskings:libssl headers.managed', 'benhoskings:zlib headers.managed'

@@ -1,17 +1,18 @@
 dep "php5" do
-  requires "php54.src"
+  requires "php55.src"
 end
 
-dep "php54.src" do
+dep "php55.src" do
    requires "envato:libxml.managed", "benhoskings:openssl.lib", "benhoskings:libssl headers.managed", "libcurl4-openssl-dev.managed", "libjpeg-dev.managed", "libpng12-dev.managed", "libmcrypt-dev.managed", "libpcre3-dev.managed", "readline-common.managed", "libreadline-dev.managed", "libfreetype6-dev.managed"
 
-   def version; "5.4.16"; end;
+   def version; "5.5.5"; end;
 
    source "http://au1.php.net/get/php-#{version}.tar.gz/from/us1.php.net/mirror"
    provides "php = #{version}"
+
    configure_args L{
      [
-      '--prefix=/usr/local',
+      '--with-libdir=/lib/x86_64-linux-gnu',
       '--with-mysql',
       '--enable-fpm',
       '--with-readline',
@@ -22,7 +23,6 @@ dep "php54.src" do
       '--enable-debug',
       '--with-zlib',
       '--with-pdo',
-      '--with-apxs2',
       '--enable-so',
       '--with-mcrypt',
       '--with-gd',
@@ -37,7 +37,7 @@ dep "php54.src" do
      ].compact.join(" ")
    }
 
-   met? { ("/etc/init.d" / "php-fpm").exists? }
+   met? { ("/etc/init.d" / "php-fpm").exists? && in_path?(provides) }
 
    postinstall {
      sudo "cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm"
