@@ -5,7 +5,7 @@ end
 dep "php55.src" do
    requires "envato:libxml.managed", "benhoskings:openssl.lib", "benhoskings:libssl headers.managed", "libcurl4-openssl-dev.managed", "libjpeg-dev.managed", "libpng12-dev.managed", "libmcrypt-dev.managed", "libpcre3-dev.managed", "readline-common.managed", "libreadline-dev.managed", "libfreetype6-dev.managed"
 
-   def version; "5.5.5"; end;
+   def version; "5.5.9"; end;
 
    source "http://au1.php.net/get/php-#{version}.tar.gz/from/us1.php.net/mirror"
    provides "php = #{version}"
@@ -47,7 +47,7 @@ dep "php55.src" do
 end
 
 dep "php-fpm", :domain, :port, :user, :group, :path do
-  requires "php54.src"
+  requires "php55.src"
 
   def group
     user
@@ -94,7 +94,7 @@ end
 end
 
 dep "php5.managed" do
-  provides "php ~> 5.4.11"
+  provides "php ~> 5.5.9"
 
 
   on :brew do
