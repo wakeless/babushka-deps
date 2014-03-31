@@ -36,6 +36,8 @@ dep "currinda web" do
     "benhoskings:self signed cert.nginx".with(:domain => domain, :nginx_prefix => "/opt/nginx", :state => "VIC", :country => "AU", :organisation => "Currinda", :email => "noone@example.com"),
     "running.nginx".with(:nginx_prefix => "/opt/nginx"),
     "running.postfix"
+    requires "benhoskings:ruby.src",
+      "god.gem"
 end
 
 dep "currinda tunnel" do
@@ -91,3 +93,4 @@ end
 dep "bundler.gem" do
   provides "bundle"
 end
+dep "god.gem"
